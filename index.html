@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Ghost Courier</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050810;
+        --panel: #0a0f1e;
+        --border: #1a2a4a;
+        --accent: #00ffe7;
+        --accent2: #ff6b35;
+        --accent3: #a259ff;
+        --text: #c8d8f0;
+        --dim: #4a6080;
+        --success: #00ff88;
+        --danger: #ff3860;
+        --glow: 0 0 20px rgba(0, 255, 231, 0.25);
+        --glow2: 0 0 20px rgba(255, 107, 53, 0.25);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Exo 2", sans-serif;
+        font-weight: 300;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* ── Grid background ── */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(0, 255, 231, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 255, 231, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── Scanline overlay ── */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.08) 2px,
+          rgba(0, 0, 0, 0.08) 4px
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .wrapper {
+        position: relative;
+        z-index: 1;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      /* ── Header ── */
+      header {
+        text-align: center;
+        padding: 52px 0 36px;
+        position: relative;
+      }
+
+      .logo-line {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 10px;
+      }
+
+      .logo-icon {
+        width: 48px;
+        height: 48px;
+        border: 2px solid var(--accent);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        box-shadow:
+          var(--glow),
+          inset 0 0 16px rgba(0, 255, 231, 0.1);
+        animation: pulse-ring 3s ease-in-out infinite;
+      }
+
+      @keyframes pulse-ring {
+        0%,
+        100% {
+          box-shadow:
+            var(--glow),
+            inset 0 0 16px rgba(0, 255, 231, 0.1);
+        }
+        50% {
+          box-shadow:
+            0 0 36px rgba(0, 255, 231, 0.5),
+            inset 0 0 24px rgba(0, 255, 231, 0.2);
+        }
+      }
+
+      h1 {
+        font-family: "Orbitron", monospace;
+        font-weight: 900;
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        letter-spacing: 0.12em;
+        background: linear-gradient(
+          135deg,
+          var(--accent) 0%,
+          #00b8ff 50%,
+          var(--accent3) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-transform: uppercase;
+      }
+
+      .tagline {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--dim);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        margin-top: 8px;
+      }
+
+      .badges {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 18px;
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.65rem;
+        padding: 4px 12px;
+        border-radius: 2px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      .badge-c {
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        background: rgba(0, 255, 231, 0.06);
+      }
+      .badge-i {
+        border: 1px solid var(--accent2);
+        color: var(--accent2);
+        background: rgba(255, 107, 53, 0.06);
+      }
+      .badge-o {
+        border: 1px solid var(--accent3);
+        color: var(--accent3);
+        background: rgba(162, 89, 255, 0.06);
+      }
+
+      /* ── Tab bar ── */
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+        margin-bottom: 24px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px;
+      }
+
+      .tab {
+        font-family: "Orbitron", monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 12px 8px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--dim);
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .tab .tab-icon {
+        font-size: 1.1rem;
+      }
+
+      .tab:hover {
+        color: var(--text);
+        border-color: var(--border);
+      }
+
+      .tab.active-encrypt {
+        background: rgba(0, 255, 231, 0.08);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .tab.active-decrypt {
+        background: rgba(0, 184, 255, 0.08);
+        border-color: #00b8ff;
+        color: #00b8ff;
+      }
+      .tab.active-hide {
+        background: rgba(162, 89, 255, 0.08);
+        border-color: var(--accent3);
+        color: var(--accent3);
+      }
+      .tab.active-reveal {
+        background: rgba(255, 107, 53, 0.08);
+        border-color: var(--accent2);
+        color: var(--accent2);
+      }
+
+      /* ── Panel ── */
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 28px;
+        display: none;
+        animation: fadeIn 0.3s ease;
+      }
+      .panel.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .panel-title {
+        font-family: "Orbitron", monospace;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .pill {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.6rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      /* ── Form elements ── */
+      .field {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--dim);
+        margin-bottom: 7px;
+      }
+      label span {
+        color: var(--accent);
+        margin-right: 6px;
+      }
+
+      textarea,
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        background: #080d1a;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        color: var(--text);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.85rem;
+        padding: 12px 14px;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        resize: vertical;
+      }
+
+      textarea:focus,
+      input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(0, 255, 231, 0.1);
+      }
+
+      input[type="number"] {
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
+
+      .row2 {
+        display: grid;
+        grid-template-columns: 1fr 140px;
+        gap: 14px;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font-family: "Orbitron", monospace;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 13px 28px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-encrypt {
+        background: var(--accent);
+        color: #050810;
+      }
+      .btn-encrypt:hover {
+        box-shadow: var(--glow);
+        transform: translateY(-1px);
+      }
+
+      .btn-decrypt {
+        background: #00b8ff;
+        color: #050810;
+      }
+      .btn-decrypt:hover {
+        box-shadow: 0 0 20px rgba(0, 184, 255, 0.4);
+        transform: translateY(-1px);
+      }
+
+      .btn-hide {
+        background: var(--accent3);
+        color: #fff;
+      }
+      .btn-hide:hover {
+        box-shadow: 0 0 20px rgba(162, 89, 255, 0.4);
+        transform: translateY(-1px);
+      }
+
+      .btn-reveal {
+        background: var(--accent2);
+        color: #fff;
+      }
+      .btn-reveal:hover {
+        box-shadow: var(--glow2);
+        transform: translateY(-1px);
+      }
+
+      .btn-copy {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--dim);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.7rem;
+        padding: 6px 14px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.2s;
+        letter-spacing: 0.08em;
+      }
+      .btn-copy:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .btn-copy.copied {
+        border-color: var(--success);
+        color: var(--success);
+      }
+
+      /* ── Output box ── */
+      .output-box {
+        background: #04070f;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 20px;
+        margin-top: 20px;
+        display: none;
+        animation: fadeIn 0.3s ease;
+      }
+      .output-box.visible {
+        display: block;
+      }
+
+      .output-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+
+      .output-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+
+      .output-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.8rem;
+        line-height: 1.6;
+      }
+
+      .out-key {
+        color: var(--dim);
+        min-width: 130px;
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        padding-top: 1px;
+      }
+
+      .out-val {
+        color: var(--text);
+        word-break: break-all;
+      }
+      .out-val.highlight {
+        color: var(--accent);
+        font-size: 0.9rem;
+      }
+      .out-val.success {
+        color: var(--success);
+      }
+      .out-val.danger {
+        color: var(--danger);
+      }
+      .out-val.hash {
+        color: #7a9fc8;
+        font-size: 0.72rem;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 12px 0;
+      }
+
+      .package-box {
+        background: #020510;
+        border: 1px solid rgba(0, 255, 231, 0.2);
+        border-radius: 4px;
+        padding: 12px 14px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--accent);
+        word-break: break-all;
+        line-height: 1.7;
+        margin-top: 6px;
+      }
+
+      /* ── Image upload zone ── */
+      .drop-zone {
+        border: 2px dashed var(--border);
+        border-radius: 6px;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+      }
+      .drop-zone:hover,
+      .drop-zone.dragover {
+        border-color: var(--accent3);
+        background: rgba(162, 89, 255, 0.04);
+      }
+      .drop-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .drop-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+      .drop-text {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--dim);
+      }
+      .drop-text strong {
+        color: var(--text);
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .img-preview {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 4px;
+        margin-top: 12px;
+        display: none;
+        border: 1px solid var(--border);
+      }
+
+      /* ── Error ── */
+      .error-msg {
+        background: rgba(255, 56, 96, 0.08);
+        border: 1px solid rgba(255, 56, 96, 0.3);
+        border-radius: 4px;
+        color: var(--danger);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.78rem;
+        padding: 10px 14px;
+        margin-top: 14px;
+        display: none;
+      }
+      .error-msg.visible {
+        display: block;
+      }
+
+      /* ── Info cards ── */
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 40px;
+      }
+
+      .info-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 18px;
+      }
+
+      .info-card-icon {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .info-card-title {
+        font-family: "Orbitron", monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .info-card p {
+        font-size: 0.78rem;
+        color: var(--dim);
+        line-height: 1.6;
+      }
+
+      .c1 .info-card-title {
+        color: var(--accent);
+      }
+      .c2 .info-card-title {
+        color: var(--accent2);
+      }
+      .c3 .info-card-title {
+        color: var(--accent3);
+      }
+
+      /* ── Footer ── */
+      footer {
+        text-align: center;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.65rem;
+        color: var(--dim);
+        padding-top: 30px;
+        letter-spacing: 0.1em;
+      }
+
+      @media (max-width: 600px) {
+        .tabs {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .row2 {
+          grid-template-columns: 1fr;
+        }
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+        .panel {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Header -->
+      <header>
+        <div class="logo-line">
+          <div class="logo-icon">👻</div>
+          <h1>Ghost Courier</h1>
+        </div>
+        <p class="tagline">Covert Messaging · Three-Layer Security Protocol</p>
+        <div class="badges">
+          <span class="badge badge-c">🔐 Caesar Cipher · Confidentiality</span>
+          <span class="badge badge-i">🔗 SHA-256 · Integrity</span>
+          <span class="badge badge-o">🖼️ LSB Steg · Obfuscation</span>
+        </div>
+      </header>
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist">
+        <button
+          class="tab active-encrypt"
+          onclick="switchTab('encrypt')"
+          id="tab-encrypt"
+        >
+          <span class="tab-icon">🔐</span>ENCRYPT
+        </button>
+        <button class="tab" onclick="switchTab('decrypt')" id="tab-decrypt">
+          <span class="tab-icon">🔓</span>DECRYPT
+        </button>
+        <button class="tab" onclick="switchTab('hide')" id="tab-hide">
+          <span class="tab-icon">🖼️</span>HIDE
+        </button>
+        <button class="tab" onclick="switchTab('reveal')" id="tab-reveal">
+          <span class="tab-icon">🔍</span>REVEAL
+        </button>
+      </div>
+
+      <!-- ══ ENCRYPT PANEL ══ -->
+      <div class="panel active" id="panel-encrypt">
+        <div class="panel-header">
+          <div class="panel-title" style="color: var(--accent)">
+            Text Encryption
+          </div>
+          <span
+            class="pill"
+            style="
+              background: rgba(0, 255, 231, 0.08);
+              color: var(--accent);
+              border: 1px solid var(--accent);
+            "
+            >Caesar + SHA-256</span
+          >
+        </div>
+        <div class="field">
+          <label><span>01</span>Plaintext Message</label>
+          <textarea
+            id="enc-msg"
+            rows="4"
+            placeholder="Type your secret message here..."
+          ></textarea>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label><span>02</span>Shift Key (1–25)</label>
+            <input
+              type="number"
+              id="enc-key"
+              min="1"
+              max="25"
+              value="13"
+              placeholder="13"
+            />
+          </div>
+          <div class="field" style="display: flex; align-items: flex-end">
+            <button
+              class="btn btn-encrypt"
+              onclick="doEncrypt()"
+              style="width: 100%"
+            >
+              ⚡ ENCRYPT
+            </button>
+          </div>
+        </div>
+        <div class="error-msg" id="enc-error"></div>
+        <div class="output-box" id="enc-output">
+          <div class="output-header">
+            <span class="output-label">// Encryption Report</span>
+            <button
+              class="btn-copy"
+              id="enc-copy-btn"
+              onclick="copyPackage('enc-package', 'enc-copy-btn')"
+            >
+              Copy Package
+            </button>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Original</span>
+            <span class="out-val" id="enc-original"></span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Ciphertext</span>
+            <span class="out-val highlight" id="enc-cipher"></span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">SHA-256</span>
+            <span class="out-val hash" id="enc-hash"></span>
+          </div>
+          <hr class="divider" />
+          <div class="output-row">
+            <span class="out-key">📦 Package</span>
+            <span class="out-val" style="flex: 1"
+              ><div class="package-box" id="enc-package"></div
+            ></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ DECRYPT PANEL ══ -->
+      <div class="panel" id="panel-decrypt">
+        <div class="panel-header">
+          <div class="panel-title" style="color: #00b8ff">Text Decryption</div>
+          <span
+            class="pill"
+            style="
+              background: rgba(0, 184, 255, 0.08);
+              color: #00b8ff;
+              border: 1px solid #00b8ff;
+            "
+            >Verify + Reveal</span
+          >
+        </div>
+        <div class="field">
+          <label
+            ><span>01</span>Encrypted Package
+            <span style="color: var(--dim); font-size: 0.65rem"
+              >(ciphertext||hash)</span
+            ></label
+          >
+          <textarea
+            id="dec-msg"
+            rows="4"
+            placeholder="Paste the encrypted package here..."
+          ></textarea>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label><span>02</span>Shift Key (1–25)</label>
+            <input
+              type="number"
+              id="dec-key"
+              min="1"
+              max="25"
+              value="13"
+              placeholder="13"
+            />
+          </div>
+          <div class="field" style="display: flex; align-items: flex-end">
+            <button
+              class="btn btn-decrypt"
+              onclick="doDecrypt()"
+              style="width: 100%"
+            >
+              🔓 DECRYPT
+            </button>
+          </div>
+        </div>
+        <div class="error-msg" id="dec-error"></div>
+        <div class="output-box" id="dec-output">
+          <div class="output-header">
+            <span class="output-label">// Decryption Report</span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Ciphertext</span>
+            <span class="out-val" id="dec-cipher"></span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Decrypted</span>
+            <span class="out-val highlight" id="dec-plain"></span>
+          </div>
+          <hr class="divider" />
+          <div class="output-row">
+            <span class="out-key">Embedded Hash</span>
+            <span class="out-val hash" id="dec-emb-hash"></span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Recomputed</span>
+            <span class="out-val hash" id="dec-re-hash"></span>
+          </div>
+          <hr class="divider" />
+          <div class="output-row">
+            <span class="out-key">Integrity</span>
+            <span class="out-val" id="dec-integrity"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ HIDE PANEL ══ -->
+      <div class="panel" id="panel-hide">
+        <div class="panel-header">
+          <div class="panel-title" style="color: var(--accent3)">
+            Hide in Image
+          </div>
+          <span
+            class="pill"
+            style="
+              background: rgba(162, 89, 255, 0.08);
+              color: var(--accent3);
+              border: 1px solid var(--accent3);
+            "
+            >LSB Steganography</span
+          >
+        </div>
+        <div class="field">
+          <label><span>01</span>Carrier PNG Image</label>
+          <div class="drop-zone" id="hide-drop">
+            <input
+              type="file"
+              id="hide-img"
+              accept="image/png,image/jpeg,image/webp"
+              onchange="previewImage('hide-img', 'hide-preview')"
+            />
+            <div class="drop-icon">🖼️</div>
+            <div class="drop-text">
+              <strong>Click or drag to upload image</strong>PNG / JPG / WEBP
+            </div>
+            <img id="hide-preview" class="img-preview" />
+          </div>
+        </div>
+        <div class="field">
+          <label><span>02</span>Secret Message</label>
+          <textarea
+            id="hide-msg"
+            rows="3"
+            placeholder="Message to hide inside the image..."
+          ></textarea>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label><span>03</span>Shift Key (1–25)</label>
+            <input type="number" id="hide-key" min="1" max="25" value="13" />
+          </div>
+          <div class="field" style="display: flex; align-items: flex-end">
+            <button class="btn btn-hide" onclick="doHide()" style="width: 100%">
+              🕵️ HIDE
+            </button>
+          </div>
+        </div>
+        <div class="error-msg" id="hide-error"></div>
+        <div class="output-box" id="hide-output">
+          <div class="output-header">
+            <span class="output-label">// Stego Image Ready</span>
+            <button
+              class="btn-copy"
+              onclick="downloadStego()"
+              id="dl-btn"
+              style="color: var(--accent3); border-color: var(--accent3)"
+            >
+              ⬇ Download
+            </button>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Original</span>
+            <span class="out-val" id="hide-original"></span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Ciphertext</span>
+            <span
+              class="out-val highlight"
+              style="color: var(--accent3)"
+              id="hide-cipher"
+            ></span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Bits used</span>
+            <span class="out-val" id="hide-bits"></span>
+          </div>
+          <hr class="divider" />
+          <canvas id="hide-canvas" style="display: none"></canvas>
+          <img
+            id="hide-result"
+            style="
+              max-width: 100%;
+              border-radius: 4px;
+              border: 1px solid var(--border);
+              margin-top: 6px;
+              display: none;
+            "
+          />
+        </div>
+      </div>
+
+      <!-- ══ REVEAL PANEL ══ -->
+      <div class="panel" id="panel-reveal">
+        <div class="panel-header">
+          <div class="panel-title" style="color: var(--accent2)">
+            Reveal from Image
+          </div>
+          <span
+            class="pill"
+            style="
+              background: rgba(255, 107, 53, 0.08);
+              color: var(--accent2);
+              border: 1px solid var(--accent2);
+            "
+            >Extract + Verify</span
+          >
+        </div>
+        <div class="field">
+          <label><span>01</span>Stego PNG Image</label>
+          <div class="drop-zone" id="reveal-drop">
+            <input
+              type="file"
+              id="reveal-img"
+              accept="image/png"
+              onchange="previewImage('reveal-img', 'reveal-preview')"
+            />
+            <div class="drop-icon">🔍</div>
+            <div class="drop-text">
+              <strong>Upload the stego PNG</strong>Must be produced by Ghost
+              Courier
+            </div>
+            <img id="reveal-preview" class="img-preview" />
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label><span>02</span>Shift Key (1–25)</label>
+            <input type="number" id="reveal-key" min="1" max="25" value="13" />
+          </div>
+          <div class="field" style="display: flex; align-items: flex-end">
+            <button
+              class="btn btn-reveal"
+              onclick="doReveal()"
+              style="width: 100%"
+            >
+              🔍 REVEAL
+            </button>
+          </div>
+        </div>
+        <div class="error-msg" id="reveal-error"></div>
+        <div class="output-box" id="reveal-output">
+          <div class="output-header">
+            <span class="output-label">// Extraction Report</span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Ciphertext</span>
+            <span class="out-val" id="rev-cipher"></span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Decrypted</span>
+            <span
+              class="out-val highlight"
+              style="color: var(--accent2)"
+              id="rev-plain"
+            ></span>
+          </div>
+          <hr class="divider" />
+          <div class="output-row">
+            <span class="out-key">Embedded Hash</span>
+            <span class="out-val hash" id="rev-emb-hash"></span>
+          </div>
+          <div class="output-row">
+            <span class="out-key">Recomputed</span>
+            <span class="out-val hash" id="rev-re-hash"></span>
+          </div>
+          <hr class="divider" />
+          <div class="output-row">
+            <span class="out-key">Integrity</span>
+            <span class="out-val" id="rev-integrity"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info cards -->
+      <div class="info-grid">
+        <div class="info-card c1">
+          <div class="info-card-icon">🔐</div>
+          <div class="info-card-title">Caesar Cipher</div>
+          <p>
+            Shifts each letter by a numeric key (1–25). Provides confidentiality
+            — raw content is unreadable without the key.
+          </p>
+        </div>
+        <div class="info-card c2">
+          <div class="info-card-icon">🔗</div>
+          <div class="info-card-title">SHA-256 Hash</div>
+          <p>
+            Generates a 256-bit fingerprint of the ciphertext. Any tampering
+            changes the hash, ensuring message integrity.
+          </p>
+        </div>
+        <div class="info-card c3">
+          <div class="info-card-icon">🖼️</div>
+          <div class="info-card-title">LSB Steganography</div>
+          <p>
+            Hides the payload in the Least Significant Bit of each pixel
+            channel. Invisible to the human eye.
+          </p>
+        </div>
+      </div>
+
+      <footer>
+        Ghost Courier v2.0 · Educational Cybersecurity Demo · All crypto runs
+        client-side
+      </footer>
+    </div>
+
+    <script>
+      // ═══════════════════════════════════════════
+      //  TAB SWITCHING
+      // ═══════════════════════════════════════════
+      const TABS = ["encrypt", "decrypt", "hide", "reveal"];
+
+      function switchTab(name) {
+        TABS.forEach((t) => {
+          document.getElementById("panel-" + t).classList.remove("active");
+          const tb = document.getElementById("tab-" + t);
+          tb.className = "tab";
+        });
+        document.getElementById("panel-" + name).classList.add("active");
+        document.getElementById("tab-" + name).className = "tab active-" + name;
+      }
+
+      // ═══════════════════════════════════════════
+      //  CAESAR CIPHER
+      // ═══════════════════════════════════════════
+      function caesarShift(text, shift) {
+        shift = ((shift % 26) + 26) % 26;
+        return text
+          .split("")
+          .map((ch) => {
+            if (/[A-Z]/.test(ch))
+              return String.fromCharCode(
+                ((ch.charCodeAt(0) - 65 + shift) % 26) + 65,
+              );
+            if (/[a-z]/.test(ch))
+              return String.fromCharCode(
+                ((ch.charCodeAt(0) - 97 + shift) % 26) + 97,
+              );
+            return ch;
+          })
+          .join("");
+      }
+
+      // ═══════════════════════════════════════════
+      //  SHA-256  (Web Crypto API)
+      // ═══════════════════════════════════════════
+      async function sha256(str) {
+        const enc = new TextEncoder();
+        const buf = await crypto.subtle.digest("SHA-256", enc.encode(str));
+        return Array.from(new Uint8Array(buf))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      // ═══════════════════════════════════════════
+      //  ENCRYPT
+      // ═══════════════════════════════════════════
+      async function doEncrypt() {
+        const msg = document.getElementById("enc-msg").value.trim();
+        const key = parseInt(document.getElementById("enc-key").value);
+        const err = document.getElementById("enc-error");
+        const out = document.getElementById("enc-output");
+
+        err.className = "error-msg";
+        out.className = "output-box";
+
+        if (!msg) return showErr(err, "Please enter a message to encrypt.");
+        if (!key || key < 1 || key > 25)
+          return showErr(err, "Shift key must be between 1 and 25.");
+
+        const cipher = caesarShift(msg, key);
+        const hash = await sha256(cipher);
+        const pkg = cipher + "||" + hash;
+
+        document.getElementById("enc-original").textContent = msg;
+        document.getElementById("enc-cipher").textContent = cipher;
+        document.getElementById("enc-hash").textContent = hash;
+        document.getElementById("enc-package").textContent = pkg;
+        out.className = "output-box visible";
+      }
+
+      // ═══════════════════════════════════════════
+      //  DECRYPT
+      // ═══════════════════════════════════════════
+      async function doDecrypt() {
+        const pkg = document.getElementById("dec-msg").value.trim();
+        const key = parseInt(document.getElementById("dec-key").value);
+        const err = document.getElementById("dec-error");
+        const out = document.getElementById("dec-output");
+
+        err.className = "error-msg";
+        out.className = "output-box";
+
+        if (!pkg) return showErr(err, "Please paste the encrypted package.");
+        if (!key || key < 1 || key > 25)
+          return showErr(err, "Shift key must be between 1 and 25.");
+        if (!pkg.includes("||"))
+          return showErr(
+            err,
+            "Invalid package — expected 'ciphertext||hash'. Copy the full Encrypted Package.",
+          );
+
+        const [cipher, embHash] = pkg.split("||");
+        const reHash = await sha256(cipher);
+        const plain = caesarShift(cipher, -key);
+        const ok = reHash === embHash;
+
+        document.getElementById("dec-cipher").textContent = cipher;
+        document.getElementById("dec-plain").textContent = plain;
+        document.getElementById("dec-emb-hash").textContent = embHash;
+        document.getElementById("dec-re-hash").textContent = reHash;
+
+        const intEl = document.getElementById("dec-integrity");
+        intEl.textContent = ok
+          ? "✅  PASSED — message is authentic and unmodified"
+          : "❌  FAILED — message may have been tampered with!";
+        intEl.className = "out-val " + (ok ? "success" : "danger");
+
+        out.className = "output-box visible";
+      }
+
+      // ═══════════════════════════════════════════
+      //  HIDE IN IMAGE  (LSB)
+      // ═══════════════════════════════════════════
+      let stegoDataURL = null;
+
+      async function doHide() {
+        const fileInput = document.getElementById("hide-img");
+        const msg = document.getElementById("hide-msg").value.trim();
+        const key = parseInt(document.getElementById("hide-key").value);
+        const err = document.getElementById("hide-error");
+        const out = document.getElementById("hide-output");
+
+        err.className = "error-msg";
+        out.className = "output-box";
+
+        if (!fileInput.files[0])
+          return showErr(err, "Please upload a carrier image.");
+        if (!msg) return showErr(err, "Please enter a message to hide.");
+        if (!key || key < 1 || key > 25)
+          return showErr(err, "Shift key must be between 1 and 25.");
+
+        const cipher = caesarShift(msg, key);
+        const hash = await sha256(cipher);
+        const MAGIC = "GHOST_COURIER:";
+        const payload = MAGIC + cipher + "||" + hash + "\x00";
+
+        const bytes = new TextEncoder().encode(payload);
+        const bits = [];
+        for (const b of bytes)
+          for (let i = 7; i >= 0; i--) bits.push((b >> i) & 1);
+
+        const img = await loadImage(fileInput.files[0]);
+        const canvas = document.getElementById("hide-canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        const imgData = ctx.getImageData(0, 0, img.width, img.height);
+        const d = imgData.data;
+        const capacity = img.width * img.height * 3;
+
+        if (bits.length > capacity) {
+          return showErr(
+            err,
+            `Message too large! Needs ${bits.length} bits but image only holds ${capacity}.`,
+          );
+        }
+
+        let bi = 0;
+        for (let i = 0; i < d.length; i++) {
+          if ((i + 1) % 4 === 0) continue; // skip alpha
+          if (bi < bits.length) {
+            d[i] = (d[i] & 0xfe) | bits[bi++];
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        stegoDataURL = canvas.toDataURL("image/png");
+        const resultImg = document.getElementById("hide-result");
+        resultImg.src = stegoDataURL;
+        resultImg.style.display = "block";
+
+        document.getElementById("hide-original").textContent = msg;
+        document.getElementById("hide-cipher").textContent = cipher;
+        document.getElementById("hide-bits").textContent =
+          `${bits.length} / ${capacity}`;
+        out.className = "output-box visible";
+      }
+
+      function downloadStego() {
+        if (!stegoDataURL) return;
+        const a = document.createElement("a");
+        a.href = stegoDataURL;
+        a.download = "ghost_stego.png";
+        a.click();
+      }
+
+      // ═══════════════════════════════════════════
+      //  REVEAL FROM IMAGE  (LSB)
+      // ═══════════════════════════════════════════
+      async function doReveal() {
+        const fileInput = document.getElementById("reveal-img");
+        const key = parseInt(document.getElementById("reveal-key").value);
+        const err = document.getElementById("reveal-error");
+        const out = document.getElementById("reveal-output");
+
+        err.className = "error-msg";
+        out.className = "output-box";
+
+        if (!fileInput.files[0])
+          return showErr(err, "Please upload a stego PNG image.");
+        if (!key || key < 1 || key > 25)
+          return showErr(err, "Shift key must be between 1 and 25.");
+
+        const img = await loadImage(fileInput.files[0]);
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        const d = ctx.getImageData(0, 0, img.width, img.height).data;
+        const bits = [];
+        for (let i = 0; i < d.length; i++) {
+          if ((i + 1) % 4 === 0) continue;
+          bits.push(d[i] & 1);
+        }
+
+        const bytes = [];
+        for (let i = 0; i + 7 < bits.length; i += 8) {
+          let byte = 0;
+          for (let j = 0; j < 8; j++) byte = (byte << 1) | bits[i + j];
+          if (byte === 0) break;
+          bytes.push(byte);
+        }
+
+        let payload;
+        try {
+          payload = new TextDecoder().decode(new Uint8Array(bytes));
+        } catch {
+          return showErr(
+            err,
+            "Could not decode payload — image may be corrupted.",
+          );
+        }
+
+        const MAGIC = "GHOST_COURIER:";
+        if (!payload.startsWith(MAGIC)) {
+          return showErr(
+            err,
+            "No Ghost Courier payload detected. Use a stego image produced by this tool.",
+          );
+        }
+
+        payload = payload.slice(MAGIC.length);
+        if (!payload.includes("||"))
+          return showErr(err, "Malformed payload — delimiter missing.");
+
+        const [cipher, embHash] = payload.split("||");
+        const reHash = await sha256(cipher);
+        const plain = caesarShift(cipher, -key);
+        const ok = reHash === embHash;
+
+        document.getElementById("rev-cipher").textContent = cipher;
+        document.getElementById("rev-plain").textContent = plain;
+        document.getElementById("rev-emb-hash").textContent = embHash;
+        document.getElementById("rev-re-hash").textContent = reHash;
+
+        const intEl = document.getElementById("rev-integrity");
+        intEl.textContent = ok
+          ? "✅  PASSED — message is authentic"
+          : "❌  FAILED — payload may be tampered!";
+        intEl.className = "out-val " + (ok ? "success" : "danger");
+
+        out.className = "output-box visible";
+      }
+
+      // ═══════════════════════════════════════════
+      //  HELPERS
+      // ═══════════════════════════════════════════
+      function showErr(el, msg) {
+        el.textContent = "⚠️  " + msg;
+        el.className = "error-msg visible";
+      }
+
+      function loadImage(file) {
+        return new Promise((res, rej) => {
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            res(img);
+          };
+          img.onerror = rej;
+          img.src = url;
+        });
+      }
+
+      function previewImage(inputId, previewId) {
+        const file = document.getElementById(inputId).files[0];
+        if (!file) return;
+        const prev = document.getElementById(previewId);
+        prev.src = URL.createObjectURL(file);
+        prev.style.display = "block";
+      }
+
+      async function copyPackage(id, btnId) {
+        const text = document.getElementById(id).textContent;
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById(btnId);
+        btn.textContent = "✓ Copied!";
+        btn.classList.add("copied");
+        setTimeout(() => {
+          btn.textContent = "Copy Package";
+          btn.classList.remove("copied");
+        }, 2000);
+      }
+
+      // Drag-over styling
+      ["hide-drop", "reveal-drop"].forEach((id) => {
+        const el = document.getElementById(id);
+        el.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          el.classList.add("dragover");
+        });
+        el.addEventListener("dragleave", () => el.classList.remove("dragover"));
+        el.addEventListener("drop", (e) => {
+          e.preventDefault();
+          el.classList.remove("dragover");
+        });
+      });
+    </script>
+  </body>
+</html>
